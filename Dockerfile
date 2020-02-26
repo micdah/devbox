@@ -106,6 +106,9 @@ RUN set -xe \
     && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER \
     && chmod 0440 /etc/sudoers.d/$USER
 
+# Create /var/run/sshd to enable OpenSSH to run
+RUN set -xe && mkdir /var/run/sshd
+
 WORKDIR /
 EXPOSE 22
 

@@ -82,13 +82,14 @@ RUN set -xe \
 RUN set -xe && wget -qO- https://github.com/derailed/k9s/releases/download/v0.17.0/k9s_Linux_x86_64.tar.gz | tar xvz -C /usr/bin k9s
 
 # Install kotlin
-ARG KOTLIN_VERSION=1.3.61
+ENV KOTLIN_VERSION=1.3.61
 RUN set -xe \
+    && env \
     && mkdir /usr/local/kotlin \
-    && wget -qO- https://github.com/JetBrains/kotlin/releases/download/v$KOTLIN_VERSION/kotlin-native-linux-$KOTLIN_VERSION.tar.gz \
+    && wget -qO- https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-native-linux-${KOTLIN_VERSION}.tar.gz \
        | tar xvz -C /usr/local/kotlin/ \
-    && mv /usr/local/kotlin/kotlin-native-linux-$KOTLIN_VERSION /usr/local/kotlin/$KOTLIN_VERSION \
-    && ln -s /usr/local/kotlin/$KOTLIN_VERSION /usr/local/kotlin/current \
+    && mv /usr/local/kotlin/kotlin-native-linux-${KOTLIN_VERSION} /usr/local/kotlin/${KOTLIN_VERSION} \
+    && ln -s /usr/local/kotlin/${KOTLIN_VERSION} /usr/local/kotlin/current \
     && ln -s -t /usr/local/bin/ /usr/local/kotlin/current/bin/*
 
 # Install kubectl
@@ -106,20 +107,24 @@ RUN set -xe \
     && apt-get update \
     && apt-get install -y docker-ce-cli
 
-# Add user
-ARG USER=micdah
+# Install NodeJS
 RUN set -xe \
-    && useradd --create-home --shell /bin/zsh $USER \
-    && usermod --append --groups sudo $USER \
-    && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER \
-    && chmod 0440 /etc/sudoers.d/$USER
+      && curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - \
+      && apt-get install -y nodejs
+
+# Add user
+RUN set -xe \
+    && useradd --create-home --shell /bin/zsh micdah \
+    && usermod --append --groups sudo micdah \
+    && echo "micdah ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/micdah \
+    && chmod 0440 /etc/sudoers.d/micdah
 
 # Create /var/run/sshd to enable OpenSSH to run
 RUN set -xe && mkdir /var/run/sshd
 
 # Only allow user to login
 RUN set -xe \
-    && echo "AllowUsers $USER" >> /etc/ssh/sshd_config
+    && echo "AllowUsers micdah" >> /etc/ssh/sshd_config
 
 WORKDIR /
 EXPOSE 22

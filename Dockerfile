@@ -109,6 +109,10 @@ RUN set -xe \
 # Create /var/run/sshd to enable OpenSSH to run
 RUN set -xe && mkdir /var/run/sshd
 
+# Only allow user to login
+RUN set -xe \
+    && echo "AllowUsers $USER" >> /etc/ssh/sshd_config
+
 WORKDIR /
 EXPOSE 22
 

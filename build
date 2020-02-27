@@ -2,4 +2,4 @@
 
 local timestamp=$(date "+%Y%m%d.%H%M")
 local version="19.10.$timestamp"
-docker build --tag micdah/devbox:$version .
+docker build --tag micdah/devbox:$version --tag micdah/devbox:latest .

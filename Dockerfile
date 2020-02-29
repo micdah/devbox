@@ -112,6 +112,13 @@ RUN set -xe \
       && curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - \
       && apt-get install -y nodejs
 
+# Install exa
+RUN set -xe \
+      && wget https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip -O exa.zip \
+      && unzip exa.zip \
+      && mv exa-linux-x86_64 /usr/local/bin/exa \
+      && rm exa.zip
+
 # Add user
 RUN set -xe \
     && useradd --create-home --shell /bin/zsh micdah \

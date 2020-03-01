@@ -33,7 +33,7 @@ RUN set -xe && sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication n
 RUN set -xe \
     && apt-get install -y adduser bzip2 coreutils curl wget diffutils grep gzip htop man mtr-tiny nano ncdu \
         gnupg1 gnupg apt-transport-https dirmngr ca-certificates lsb-release \
-        neovim net-tools p7zip-full tar tmux vim zsh fzy mmv emacs sudo tree 
+        net-tools p7zip-full tar tmux vim zsh fzy mmv emacs sudo tree 
 
 # Install developer tools
 RUN set -xe \
@@ -114,7 +114,6 @@ RUN set -xe \
 RUN set -xe \
       && curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - \
       && apt-get install -y nodejs
-# Install exa
 
 # Install exa
 RUN set -xe \
@@ -123,6 +122,13 @@ RUN set -xe \
       && unzip exa.zip \
       && mv exa-linux-x86_64 /usr/local/bin/exa \
       && rm exa.zip
+
+# Install neovim
+RUN set -xe \
+      && export NEOVIM_URL=`wget -qO- https://api.github.com/repos/neovim/neovim/releases/latest | jq -r '.assets[].browser_download_url | select(contains("linux64"))'` \
+      && wget $NEOVIM_URL -O neovim.tar.gz \
+      && tar --strip-components=1 -C /usr -xvf neovim.tar.gz \
+      && rm neovim.tar.gz
 
 # Install Go
 RUN set -xe \
@@ -137,15 +143,26 @@ RUN set -xe \
       && npm -g install remark-stringify \
       && npm -g install remark-frontmatter \
       && npm -g install wcwidth \
-      && npm -g install import-js --unsafe
+      && npm -g install import-js --unsafe \
+      && npm -g install neovim
 
-# Install python dependencies
+# Install python2.x dependencies
 RUN set -xe \
       && pip install flake8 \
       && pip install autoflake \
       && pip install isort \
-      && pip install coverage
+      && pip install coverage \
+      && pip install pynvim \
+      && pip install --upgrade msgpack
 
+# Install python3.x dependencies
+RUN set -xe \
+      && pip3 install pynvim \
+      && pip3 install --upgrade msgpack
+
+# Install ruby dependencies
+RUN set -xe \
+      && gem install neovim
 
 # Add user
 RUN set -xe \

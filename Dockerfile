@@ -25,8 +25,8 @@ RUN yes | unminimize
 
 # Install OpenSSH server
 RUN set -xe && apt-get install -y openssh-server
-
 # Disallow password when authenticating against SSH
+
 RUN set -xe && sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 # Install common utilities
@@ -37,7 +37,8 @@ RUN set -xe \
 
 # Install developer tools
 RUN set -xe \
-    && apt-get install -y build-essential git git-extras git-lfs ruby-dev source-highlight python python3 default-jdk
+    && apt-get install -y build-essential git git-extras git-lfs ruby-dev source-highlight python python3 \
+    default-jdk jq python-pip python3-pip
 
 # Install .NET Core
 RUN set -xe \
@@ -79,7 +80,9 @@ RUN set -xe \
     && apt-get install -y azure-cli
 
 # Install k9s
-RUN set -xe && wget -qO- https://github.com/derailed/k9s/releases/download/v0.17.0/k9s_Linux_x86_64.tar.gz | tar xvz -C /usr/bin k9s
+RUN set -xe \
+      && export K9S_URL=`wget -qO- https://api.github.com/repos/derailed/k9s/releases/latest | jq -r '.assets[].browser_download_url | select(contains("Linux_x86_64"))'` \ 
+      && wget -qO- ${K9S_URL} | tar xvz -C /usr/bin k9s
 
 # Install kotlin
 ENV KOTLIN_VERSION=1.3.61
@@ -111,13 +114,37 @@ RUN set -xe \
 RUN set -xe \
       && curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash - \
       && apt-get install -y nodejs
+# Install exa
 
 # Install exa
 RUN set -xe \
-      && wget https://github.com/ogham/exa/releases/download/v0.9.0/exa-linux-x86_64-0.9.0.zip -O exa.zip \
+      && export EXA_URL=`wget -qO- https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[].browser_download_url | select(contains("linux-x86_64"))'` \
+      && wget $EXA_URL -O exa.zip \
       && unzip exa.zip \
       && mv exa-linux-x86_64 /usr/local/bin/exa \
       && rm exa.zip
+
+# Install Go
+RUN set -xe \
+      && add-apt-repository ppa:longsleep/golang-backports \ 
+      && apt update \
+      && apt install -y golang-go
+
+# Install markdown dependencies 
+RUN set -xe \
+      && npm -g install remark \
+      && npm -g install remark-cli \
+      && npm -g install remark-stringify \
+      && npm -g install remark-frontmatter \
+      && npm -g install wcwidth
+
+# Install python dependencies
+RUN set -xe \
+      && pip install flake8 \
+      && pip install autoflake \
+      && pip install isort \
+      && pip install coverage
+
 
 # Add user
 RUN set -xe \

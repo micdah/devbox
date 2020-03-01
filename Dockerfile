@@ -130,13 +130,14 @@ RUN set -xe \
       && apt update \
       && apt install -y golang-go
 
-# Install markdown dependencies 
+# Install node dependencies 
 RUN set -xe \
       && npm -g install remark \
       && npm -g install remark-cli \
       && npm -g install remark-stringify \
       && npm -g install remark-frontmatter \
-      && npm -g install wcwidth
+      && npm -g install wcwidth \
+      && npm -g install import-js --unsafe
 
 # Install python dependencies
 RUN set -xe \

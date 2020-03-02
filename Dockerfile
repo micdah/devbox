@@ -85,12 +85,11 @@ RUN set -xe \
       && wget -qO- ${K9S_URL} | tar xvz -C /usr/bin k9s
 
 # Install kotlin
-ENV KOTLIN_VERSION=1.3.61
 RUN set -xe \
-    && env \
     && mkdir /usr/local/kotlin \
-    && wget -qO- https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-native-linux-${KOTLIN_VERSION}.tar.gz \
-       | tar xvz -C /usr/local/kotlin/ \
+    && export KOTLIN_URL=`wget -qO- https://api.github.com/repos/JetBrains/kotlin/releases/latest | jq -r '.assets[].browser_download_url | select(contains("linux"))'` \
+    && export KOTLIN_VERSION=`wget -qO- https://api.github.com/repos/JetBrains/kotlin/releases/latest | jq -r '.tag_name' | sed s/v//` \
+    && wget -qO- ${KOTLIN_URL} | tar xvz -C /usr/local/kotlin/ \
     && mv /usr/local/kotlin/kotlin-native-linux-${KOTLIN_VERSION} /usr/local/kotlin/${KOTLIN_VERSION} \
     && ln -s /usr/local/kotlin/${KOTLIN_VERSION} /usr/local/kotlin/current \
     && ln -s -t /usr/local/bin/ /usr/local/kotlin/current/bin/*

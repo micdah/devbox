@@ -163,6 +163,14 @@ RUN set -xe \
 RUN set -xe \
       && gem install neovim
 
+# Configure JAVA_HOME
+RUN set -xe \
+      && echo "JAVA_HOME=\"`readlink -f $(which java) | sed 's/\/bin\/java//'`\"" >> /etc/environment
+
+# Fix docker login not working
+RUN set -xe \
+      && apt-get install -y gnupg2 pass
+
 # Add user
 RUN set -xe \
     && useradd --create-home --shell /bin/zsh micdah \

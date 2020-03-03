@@ -33,7 +33,7 @@ RUN set -xe && sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication n
 RUN set -xe \
     && apt-get install -y adduser bzip2 coreutils curl wget diffutils grep gzip htop man mtr-tiny nano ncdu \
         gnupg1 gnupg apt-transport-https dirmngr ca-certificates lsb-release \
-        net-tools p7zip-full tar tmux vim zsh fzy mmv emacs sudo tree 
+        net-tools p7zip-full tar tmux vim zsh fzy mmv emacs sudo tree glances
 
 # Install developer tools
 RUN set -xe \

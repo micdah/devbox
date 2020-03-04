@@ -143,7 +143,8 @@ RUN set -xe \
       && npm -g install remark-frontmatter \
       && npm -g install wcwidth \
       && npm -g install import-js --unsafe \
-      && npm -g install neovim
+      && npm -g install neovim \
+      && npm -g install typescript
 
 # Install python2.x dependencies
 RUN set -xe \

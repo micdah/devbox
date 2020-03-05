@@ -179,6 +179,10 @@ RUN set -xe \
       && apt-get update \
       && apt-get install -y yarn
 
+# Ensure everything is up-2-date
+RUN set -xe \
+      && aptitude safe-upgrade -y
+
 # Add user
 RUN set -xe \
     && useradd --create-home --shell /bin/zsh micdah \
